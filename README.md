@@ -1,4 +1,4 @@
-# chatwork-mcp (Cloudflare Workers版)
+# cw-mcp (Cloudflare Workers版)
 
 > **非公式・実験的運用** — Chatwork公式MCPサーバーのCloudflareWorkers移植版です。
 
@@ -69,7 +69,7 @@ Chatwork公式の [chatwork/chatwork-mcp-server](https://github.com/chatwork/cha
 2. 以下のURLを入力（`YOUR_TOKEN` を実際のAPIトークンに置き換える）
 
 ```
-https://chatwork-mcp.daichi-dev.workers.dev/mcp?token=YOUR_TOKEN
+https://cw-mcp.daichi-dev.workers.dev/mcp?token=YOUR_TOKEN
 ```
 
 3. 「Connect」をクリック
@@ -94,7 +94,7 @@ https://chatwork-mcp.daichi-dev.workers.dev/mcp?token=YOUR_TOKEN
 {
   "mcpServers": {
     "chatwork": {
-      "url": "https://chatwork-mcp.daichi-dev.workers.dev/mcp",
+      "url": "https://cw-mcp.daichi-dev.workers.dev/mcp",
       "headers": {
         "X-Chatwork-Token": "ここにChatwork APIトークンを貼る"
       }
@@ -138,8 +138,8 @@ room_id 123456789 に「お疲れ様です！」と送って
 ## 自分でデプロイする場合
 
 ```bash
-git clone https://github.com/icloudaichi/chatwork-mcp.git
-cd chatwork-mcp
+git clone https://github.com/icloudaichi/cw-mcp.git
+cd cw-mcp
 npm install
 npx wrangler login
 npx wrangler deploy
