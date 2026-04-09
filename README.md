@@ -1,6 +1,6 @@
-# chatwork-mcp
+# chatwork-mcp (Cloudflare Workers版)
 
-> **Unofficial** MCP Server for Chatwork — Cloudflare Workers で動作します。
+> **非公式・実験的運用** — Chatwork公式MCPサーバーのCloudflareWorkers移植版です。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -11,13 +11,28 @@
 
 ---
 
-## 概要
+## このリポジトリについて
 
-Claude から Chatwork の閲覧・送信ができる MCP サーバーです。
+Chatwork公式の [chatwork/chatwork-mcp-server](https://github.com/chatwork/chatwork-mcp-server) はローカル実行（stdio）方式のため、**claude.ai Web版のカスタムMCP連携に対応していません**。
+
+このリポジトリは、**LBSコミュニティメンバーが claude.ai から直接Chatworkを使えるよう**、Cloudflare Workers上にリモートMCPサーバーとして構築したものです。インストール不要でURLを登録するだけで使えます。
+
+### 公式版との違い
+
+| 項目 | 公式版 | このリポジトリ |
+|------|--------|--------------|
+| 実行方式 | ローカル（npx） | Cloudflare Workers（リモート） |
+| claude.ai対応 | ❌ | ✅ |
+| Claude Desktop対応 | ✅ | ✅ |
+| インストール | 必要 | 不要（URLだけ） |
+| APIキー管理 | 環境変数 | URLパラメータ or ヘッダー |
+
+---
+
+## 概要
 
 - **APIキーはサーバーに保存しません** — URLまたはヘッダーで毎回送信するだけ
 - **Cloudflare Workers 上で動作** — サーバー管理不要、無料枠で運用可能
-- **3つのツール** — ルーム一覧 / メッセージ取得 / メッセージ送信
 
 ---
 
@@ -28,6 +43,8 @@ Claude から Chatwork の閲覧・送信ができる MCP サーバーです。
 | `list_rooms` | 参加しているルーム一覧を取得 |
 | `get_messages` | 指定ルームのメッセージを取得（未読 or 最新100件） |
 | `send_message` | 指定ルームにメッセージを送信 |
+
+> ツールは順次拡充予定です。
 
 ---
 
@@ -46,9 +63,9 @@ Claude から Chatwork の閲覧・送信ができる MCP サーバーです。
 
 ---
 
-### 方法 A: claude.ai Web版（カスタムMCP）
+### 方法 A: claude.ai Web版（カスタムMCP） ← **LBSメンバーはこちら**
 
-1. claude.ai にアクセス → 左メニュー **「Settings」→「Integrations」→「Add custom integration」**
+1. claude.ai → 左メニュー **「Settings」→「Integrations」→「Add custom integration」**
 2. 以下のURLを入力（`YOUR_TOKEN` を実際のAPIトークンに置き換える）
 
 ```
@@ -57,21 +74,21 @@ https://chatwork-mcp.daichi-dev.workers.dev/mcp?token=YOUR_TOKEN
 
 3. 「Connect」をクリック
 
-> [!NOTE]
-> URLにAPIトークンが含まれます。URLを他人に共有しないよう注意してください。
+> [!CAUTION]
+> URLにAPIトークンが含まれます。このURLを**他人に共有しないよう**注意してください。
 
 ---
 
 ### 方法 B: Claude Desktop（設定ファイル）
 
-**設定ファイルの場所:**
+設定ファイルの場所:
 
 | OS | パス |
 |----|------|
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 
-**以下を追加:**
+以下を追加:
 
 ```json
 {
@@ -135,6 +152,14 @@ npx wrangler deploy
 - 本ツールは Chatwork 株式会社の公式製品・サービスではありません
 - Chatwork API の利用は [Chatwork API 利用規約](https://go.chatwork.com/ja/terms/) に従ってください
 - 本ツールの使用によって生じたいかなる損害についても、作者は責任を負いません
+- このサーバーは実験的な運用であり、予告なく停止・変更する場合があります
+
+---
+
+## Related
+
+- [chatwork/chatwork-mcp-server](https://github.com/chatwork/chatwork-mcp-server) — Chatwork公式MCPサーバー（ローカル実行版）
+- [Chatwork API Documentation](https://developer.chatwork.com/)
 
 ---
 
