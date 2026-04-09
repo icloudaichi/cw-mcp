@@ -15,7 +15,7 @@
 
 Chatwork公式の [chatwork/chatwork-mcp-server](https://github.com/chatwork/chatwork-mcp-server) はローカル実行（stdio）方式のため、**claude.ai Web版のカスタムMCP連携に対応していません**。
 
-このリポジトリは、**LBSコミュニティメンバーが claude.ai から直接Chatworkを使えるよう**、Cloudflare Workers上にリモートMCPサーバーとして構築したものです。インストール不要でURLを登録するだけで使えます。
+このリポジトリは、**コミュニティメンバーが claude.ai から直接Chatworkを使えるよう**、Cloudflare Workers上にリモートMCPサーバーとして構築したものです。インストール不要でURLを登録するだけで使えます。
 
 ### 公式版との違い
 
@@ -63,7 +63,7 @@ Chatwork公式の [chatwork/chatwork-mcp-server](https://github.com/chatwork/cha
 
 ---
 
-### 方法 A: claude.ai Web版（カスタムMCP） ← **LBSメンバーはこちら**
+### 方法 A: claude.ai Web版（カスタムMCP） ← **コミュニティメンバーはこちら**
 
 1. claude.ai → 左メニュー **「Settings」→「Integrations」→「Add custom integration」**
 2. 以下のURLを入力（`YOUR_TOKEN` を実際のAPIトークンに置き換える）
