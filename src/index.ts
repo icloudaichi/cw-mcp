@@ -1,6 +1,6 @@
 // Chatwork MCP Server for Cloudflare Workers
-// MCPプロトコル（Streamable HTTP）を手動実装
-// APIキーはリクエストヘッダー X-Chatwork-Token で受け取る（サーバーに保存しない）
+// MCPプロトコル（Streamable HTTP + SSE）を手動実装
+// APIキーはヘッダー(X-Chatwork-Token)またはクエリパラメータ(?token=)で受け取る（サーバーに保存しない）
 
 const CHATWORK_API = "https://api.chatwork.com/v2";
 
@@ -240,7 +240,7 @@ export default {
           name: "chatwork-mcp",
           version: "1.0.0",
           description:
-            "Chatwork MCP Server - X-Chatwork-Token ヘッダーにAPIキーを設定してください",
+            "Chatwork MCP Server (unofficial) — ヘッダー X-Chatwork-Token またはクエリパラメータ ?token= にAPIキーを設定してください",
         }),
         {
           headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
@@ -253,6 +253,44 @@ export default {
       return new Response("Not Found", { status: 404, headers: CORS_HEADERS });
     }
 
+    // APIキー取得: ヘッダー優先、なければクエリパラメータ
+    const token =
+      request.headers.get("X-Chatwork-Token") ||
+      url.searchParams.get("token");
+
+    // GET /mcp → SSE接続確認（claude.ai Web版がここで疎通チェックする）
+    if (request.method === "GET") {
+      if (!token) {
+        // トークンなしでも SSE ストリームは開く（接続確認のため）
+        const { readable, writable } = new TransformStream();
+        const writer = writable.getWriter();
+        const encoder = new TextEncoder();
+        // endpoint イベントを送って接続確立を通知
+        writer.write(encoder.encode("event: endpoint\ndata: /mcp\n\n"));
+        writer.close();
+        return new Response(readable, {
+          headers: {
+            ...CORS_HEADERS,
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+          },
+        });
+      }
+      // トークンあり: 通常の SSE エンドポイント通知
+      const { readable, writable } = new TransformStream();
+      const writer = writable.getWriter();
+      const encoder = new TextEncoder();
+      writer.write(encoder.encode("event: endpoint\ndata: /mcp\n\n"));
+      writer.close();
+      return new Response(readable, {
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+        },
+      });
+    }
+
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", {
         status: 405,
@@ -260,8 +298,7 @@ export default {
       });
     }
 
-    // APIキー確認
-    const token = request.headers.get("X-Chatwork-Token");
+    // POSTの場合: APIキー必須チェック
     if (!token) {
       return jsonResponse(
         {
@@ -269,7 +306,7 @@ export default {
           error: {
             code: -32600,
             message:
-              "X-Chatwork-Token ヘッダーが必要です。ChatworkのAPIキーを設定してください。",
+              "APIキーが必要です。URLに ?token=YOUR_API_KEY を追加するか、X-Chatwork-Token ヘッダーを設定してください。",
           },
         },
         401
